@@ -1,0 +1,152 @@
+<!DOCTYPE html> <!-- Browser ko batata hai ke yeh modern HTML5 document hai -->
+<html lang="en"> <!-- HTML document ka main root tag jahan se webpage shuru hota hai -->
+<head> <!-- Head tag: Is mein webpage ki settings, title aur styling hoti hai -->
+  <meta charset="UTF-8"> <!-- Har qisam ke characters aur zubano ko sahi dikhane ke liye UTF-8 encoding -->
+  <title>Sada Calculator</title> <!-- Browser ke tab par dikhne wala page ka title/naam -->
+  <style>
+    /* ======================================================== */
+    /* 1. Page ki bunyadi styling (CSS)                         */
+    /* ======================================================== */
+    body {
+      display: flex; /* Flexbox layout: elements ko screen par center karne ke liye */
+      justify-content: center; /* Calculator ko horizontal (chaurai mein) screen ke bilkul beech mein lane ke liye */
+      align-items: center; /* Calculator ko vertical (lambai mein) screen ke bilkul darmiyan mein rakhne ke liye */
+      height: 100vh; /* Puri screen ki 100% lambai (Viewport Height) lene ke liye */
+      font-family: Arial, sans-serif; /* Likhai (text) ka font style Arial set karne ke liye */
+      background-color: #f0f0f0; /* Page ke background ka halka gray color */
+      margin: 0; /* Page ke kinaron se faltu space (margin) khatam karne ke liye */
+    }
+
+    /* ======================================================== */
+    /* 2. Calculator ke main box ka design                      */
+    /* ======================================================== */
+    .calculator {
+      border: 2px solid #333; /* Calculator ke gird 2 pixel mota dark gray border */
+      padding: 15px; /* Calculator box ke andar 15 pixel ki khuli jagah (padding) */
+      border-radius: 8px; /* Box ke charon kono ko thoda gol (rounded) karne ke liye */
+      background-color: #ffffff; /* Calculator box ka safed (white) background color */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Halka saya (shadow) taake calculator box ubhra hua lage */
+    }
+
+    /* ======================================================== */
+    /* 3. Screen (Display input) ki styling                     */
+    /* ======================================================== */
+    #display {
+      width: 100%; /* Screen ki chaurai calculator box ke barabar 100% */
+      height: 40px; /* Screen ki unchai (height) 40 pixel */
+      font-size: 20px; /* Likhai (numbers) ka font size 20 pixel */
+      text-align: right; /* Numbers ko daayein taraf (right side) se shuru karne ke liye */
+      margin-bottom: 15px; /* Display screen aur buttons ke darmiyan 15 pixel ka fasla */
+      padding-right: 5px; /* Right side ke kinaray se 5 pixel ka fasla */
+      box-sizing: border-box; /* Padding aur border ko total width ke andar count karne ke liye */
+      border: 1px solid #ccc; /* Display screen ka halka gray border */
+    }
+
+    /* ======================================================== */
+    /* 4. Buttons ki grid layout (4 columns)                    */
+    /* ======================================================== */
+    .buttons {
+      display: grid; /* Grid layout: buttons ko barabar rows aur columns mein arrange karne ke liye */
+      grid-template-columns: repeat(4, 50px); /* 4 barabar columns, har button 50 pixel chaura */
+      gap: 10px; /* Har button ke darmiyan 10 pixel ka fasla (gap) */
+    }
+
+    /* ======================================================== */
+    /* 5. Har button ki aam styling                            */
+    /* ======================================================== */
+    button {
+      height: 50px; /* Har button ki unchai 50 pixel */
+      font-size: 18px; /* Button ke andar text ka font size 18 pixel */
+      cursor: pointer; /* Button par mouse le jane par hath ka nishan (pointer) banne ke liye */
+      background-color: #e0e0e0; /* Button ka halka gray background color */
+      border: 1px solid #999; /* Button ka 1 pixel ka border */
+      border-radius: 4px; /* Button ke kono ko 4 pixel tak halka gol karna */
+    }
+
+    /* ======================================================== */
+    /* 6. Mouse hover effect (jab mouse button ke upar aaye)    */
+    /* ======================================================== */
+    button:hover {
+      background-color: #d4d4d4; /* Mouse upar lane par button ka color thoda dark ho jaye */
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Calculator ka main container box -->
+  <div class="calculator">
+
+    <!-- Display Screen: Jahan number type honge aur hisab nazar aayega (readonly yani direct typing band) -->
+    <input type="text" id="display" readonly>
+
+    <!-- Sab Buttons ka container -->
+    <div class="buttons">
+      <!-- Row 1: Clear, Taqseem, Zarb, aur Backspace -->
+      <button onclick="clearDisplay()">C</button> <!-- Screen ko bilkul saaf (clear) karne ka button -->
+      <button onclick="appendValue('/')">/</button> <!-- Taqseem (Divide /) ka button -->
+      <button onclick="appendValue('*')">*</button> <!-- Zarb (Multiply *) ka button -->
+      <button onclick="deleteLast()">⌫</button> <!-- Aakhri likha hua number mitane ka button (Backspace) -->
+
+      <!-- Row 2: Numbers 7, 8, 9 aur Minus -->
+      <button onclick="appendValue('7')">7</button> <!-- Number 7 screen par likhne ka button -->
+      <button onclick="appendValue('8')">8</button> <!-- Number 8 screen par likhne ka button -->
+      <button onclick="appendValue('9')">9</button> <!-- Number 9 screen par likhne ka button -->
+      <button onclick="appendValue('-')">-</button> <!-- Manfi (Minus -) ka button -->
+
+      <!-- Row 3: Numbers 4, 5, 6 aur Plus -->
+      <button onclick="appendValue('4')">4</button> <!-- Number 4 screen par likhne ka button -->
+      <button onclick="appendValue('5')">5</button> <!-- Number 5 screen par likhne ka button -->
+      <button onclick="appendValue('6')">6</button> <!-- Number 6 screen par likhne ka button -->
+      <button onclick="appendValue('+')">+</button> <!-- Jama (Plus +) ka button -->
+
+      <!-- Row 4: Numbers 1, 2, 3 aur Equals -->
+      <button onclick="appendValue('1')">1</button> <!-- Number 1 screen par likhne ka button -->
+      <button onclick="appendValue('2')">2</button> <!-- Number 2 screen par likhne ka button -->
+      <button onclick="appendValue('3')">3</button> <!-- Number 3 screen par likhne ka button -->
+      <button onclick="calculate()">=</button> <!-- Barabar (=) ka button: Calculation run karke jawab dikhane ke liye -->
+
+      <!-- Row 5: Number 0 (double column) aur Ashariya (.) -->
+      <button onclick="appendValue('0')" style="grid-column: span 2; width: 100%;">0</button> <!-- Number 0 ka button (2 columns jitni chaurai) -->
+      <button onclick="appendValue('.')">.</button> <!-- Ashariya (Decimal point .) ka button -->
+    </div> <!-- Buttons grid ka ikhtitam (end) -->
+
+  </div> <!-- Calculator main container ka ikhtitam -->
+
+  <!-- ======================================================== -->
+  <!-- JAVASCRIPT: Calculator ke kaam karne ki logic             -->
+  <!-- ======================================================== -->
+  <script>
+    // 1. Screen element ko uski ID 'display' ke zariye JavaScript mein pakarna
+    const display = document.getElementById('display');
+
+    // 2. Button dabane par number ya mathematical sign screen par aage jorna
+    function appendValue(val) {
+      display.value += val; // Jo button dabaya jaye, uski value pehle wali value ke aage jor do
+    }
+
+    // 3. Screen ko mukammal saaf (clear) karne ka function
+    function clearDisplay() {
+      display.value = ''; // Display screen ko bilkul khali (empty) kar do
+    }
+
+    // 4. Aakhri likha hua number ya sign mitana (Backspace button)
+    function deleteLast() {
+      display.value = display.value.slice(0, -1); // String mein se aakhri 1 character hata do
+    }
+
+    // 5. Mathematical hisab karke result screen par dikhane ka function
+    function calculate() {
+      try {
+        // Check karo agar display screen par koi value maujood hai
+        if (display.value.trim() !== '') {
+          // eval() function mathematical equation ko solve karke final jawab display mein daal deta hai
+          display.value = eval(display.value);
+        }
+      } catch (error) {
+        // Agar equation ghalat ho (jaise ++ ya //) to screen par 'Error' show karo
+        display.value = 'Error';
+      }
+    }
+  </script>
+</body>
+</html>
